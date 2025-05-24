@@ -53,6 +53,11 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation (libs.firebase.firestore.ktx)
     implementation(libs.lifecycle.viewmodel)
+    implementation (libs.navigation.fragment)
+    implementation (libs.navigation.ui)
+    implementation (libs.material.v180)
+    implementation(libs.constraintlayout)
+    implementation(libs.navigation.fragment)
 
 
 

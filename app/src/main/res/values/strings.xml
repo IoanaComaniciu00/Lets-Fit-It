@@ -10,4 +10,14 @@
     <string name="forgot_password">Forgot Password</string>
     <string name="not_registered">Not yet registered? Sign Up</string>
     <string name="google_singin">Sign in with Google</string>
+    <string name="asset_statements" translatable="false">
+[{
+  \"include\": \"https://example.com/.well-known/assetlinks.json\"
+}]
+</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="home">Home</string>
+    <string name="profile">Profile</string>
 </resources>

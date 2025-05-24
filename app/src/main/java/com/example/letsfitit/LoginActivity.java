@@ -12,11 +12,15 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.credentials.CreateCredentialResponse;
+import androidx.credentials.CreatePasswordRequest;
 import androidx.credentials.Credential;
 import androidx.credentials.CredentialManager;
+import androidx.credentials.CredentialManagerCallback;
 import androidx.credentials.GetCredentialRequest;
 import androidx.credentials.GetCredentialResponse;
 import androidx.credentials.PasswordCredential;
+import androidx.credentials.exceptions.CreateCredentialException;
 import androidx.credentials.exceptions.GetCredentialException;
 import androidx.credentials.exceptions.NoCredentialException;
 
@@ -140,6 +144,7 @@ public class LoginActivity extends AppCompatActivity {
         auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
+                        saveCredentialsToManager(email, password);
                         FirebaseUser user = auth.getCurrentUser();
                         updateUI(user);
                     } else {
@@ -148,6 +153,27 @@ public class LoginActivity extends AppCompatActivity {
                         updateUI(null);
                     }
                 });
+    }
+    private void saveCredentialsToManager(String email, String password) {
+        CreatePasswordRequest request = new CreatePasswordRequest(email, password);
+
+        credentialManager.createCredentialAsync(
+                this,
+                request,
+                null,
+                Runnable::run,
+                new CredentialManagerCallback<CreateCredentialResponse, CreateCredentialException>() {
+                    @Override
+                    public void onResult(CreateCredentialResponse response) {
+                        Log.d(TAG, "Credentials saved successfully");
+                    }
+
+                    @Override
+                    public void onError(CreateCredentialException e) {
+                        Log.e(TAG, "Failed to save credentials", e);
+                    }
+                }
+        );
     }
 
     private void signInWithGoogle() {
