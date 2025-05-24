@@ -1,0 +1,13 @@
+<resources>
+    <string name="client_id">788378232997-g4cl0kmmn21i1hh3pn046t37b6qdlk96.apps.googleusercontent.com</string>
+    <string name="app_name">Let\'s Fit It</string>
+    <string name="welcome_message">Welcome to this app!</string>
+    <string name="sing_up">Sing Up</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="already_user">Already an user? Login</string>
+    <string name="login">Login</string>
+    <string name="forgot_password">Forgot Password</string>
+    <string name="not_registered">Not yet registered? Sign Up</string>
+    <string name="google_singin">Sign in with Google</string>
+</resources>

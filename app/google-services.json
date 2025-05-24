@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "788378232997",
+    "project_id": "lets-fitit",
+    "storage_bucket": "lets-fitit.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:788378232997:android:253962f8c7c03c9a92454c",
+        "android_client_info": {
+          "package_name": "com.example.letsfitit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4nZq8_2ZOhe3IgFi3ILnxT-M00FnYDtY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
