@@ -81,7 +81,7 @@
                 android:textColor="@color/dark_teal"
                 android:textSize="16sp" />
 
-           <!--<com.google.android.gms.common.SignInButton
+           <com.google.android.gms.common.SignInButton
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/google_singin"
@@ -91,7 +91,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginStart="40dp"
                 android:layout_marginEnd="40dp"
-                android:padding="8dp"/> -->
+                android:padding="8dp"/>
 
             <TextView
                 android:id="@+id/signUpRedirectText"

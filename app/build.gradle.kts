@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.letsfitit"
-        minSdk = 24
+        minSdk = 28
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -42,15 +42,18 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.credentials)
     implementation(libs.credentials.play.services.auth)
+    implementation(libs.play.services.auth)
     implementation(libs.googleid)
-    testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation(libs.glide)
-    //implementation(libs.gbutton)
+    implementation(libs.gbutton)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    implementation (libs.firebase.firestore.ktx)
+    implementation(libs.lifecycle.viewmodel)
+
 
 
 }
