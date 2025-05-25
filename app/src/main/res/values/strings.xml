@@ -20,4 +20,11 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="home">Home</string>
     <string name="profile">Profile</string>
+    <string name="profile_pic">Profile pic</string>
+    <string-array name="gender_options">
+        <item>Male</item>
+        <item>Female</item>
+        <item>Other</item>
+        <item>Prefer not to say</item>
+    </string-array>
 </resources>

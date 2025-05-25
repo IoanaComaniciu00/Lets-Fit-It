@@ -58,6 +58,9 @@ dependencies {
     implementation (libs.material.v180)
     implementation(libs.constraintlayout)
     implementation(libs.navigation.fragment)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
+    annotationProcessor(libs.compiler)
 
 
 
