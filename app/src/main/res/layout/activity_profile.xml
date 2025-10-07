@@ -18,7 +18,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:navigationIcon="@drawable/nav_arrow"
-            app:title="My Measurements"/>
+            app:title="Profile"/>
 
         <!-- Profile Picture -->
         <ImageView

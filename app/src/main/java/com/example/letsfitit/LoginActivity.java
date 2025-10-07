@@ -10,7 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.credentials.CreateCredentialResponse;
 import androidx.credentials.CreatePasswordRequest;
@@ -42,6 +42,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 100;
 
     private FirebaseAuth auth;
+    private FirebaseAuth.AuthStateListener authListener;
     private EditText loginEmail, loginPassword;
     private TextView signupRedirectText, forgotPassword;
     private Button loginButton;
@@ -55,12 +56,8 @@ public class LoginActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
 
-        // Firebase Auth
         auth = FirebaseAuth.getInstance();
-
-        //Credential Manager
         credentialManager = CredentialManager.create(this);
-
 
         loginEmail = findViewById(R.id.login_email);
         loginPassword = findViewById(R.id.login_password);
@@ -69,14 +66,12 @@ public class LoginActivity extends AppCompatActivity {
         forgotPassword = findViewById(R.id.forgot_password);
         googleSignInButton = findViewById(R.id.googleBtn);
 
-        // Google Sign-In configuration
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.client_id)) // Replace with your actual Web Client ID from Firebase
+                .requestIdToken(getString(R.string.client_id))
                 .requestEmail()
                 .build();
         googleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        // Email/password login
         loginButton.setOnClickListener(view -> {
             String email = loginEmail.getText().toString();
             String pass = loginPassword.getText().toString();
@@ -94,19 +89,58 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        // Google sign-in click
         googleSignInButton.setOnClickListener(view -> signInWithGoogle());
 
-        // Redirect to sign-up activity
         signupRedirectText.setOnClickListener(view ->
                 startActivity(new Intent(LoginActivity.this, SignUpActivity.class)));
 
-        // Password reset (to be implemented)
         forgotPassword.setOnClickListener(view ->
                 Toast.makeText(this, "Work in progress", Toast.LENGTH_SHORT).show());
+
+        // AuthStateListener
+        authListener = firebaseAuth -> {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            if (user != null) {
+                Log.d(TAG, "AuthStateListener - user is signed in");
+                updateUI(user);
+            }
+        };
     }
 
-    private void signInWithEmailPassword(String email, String password) {
+    @Override
+    protected void onStart() {
+        super.onStart();
+        auth.addAuthStateListener(authListener);
+
+        // Avoid re-authenticating if already signed in
+        FirebaseUser currentUser = auth.getCurrentUser();
+        if (currentUser != null) {
+            Log.d(TAG, "User is already signed in");
+            updateUI(currentUser);
+        } else {
+            checkGoogleOrSavedCredentials(); // Move this here
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (authListener != null) {
+            auth.removeAuthStateListener(authListener);
+        }
+    }
+
+    private void checkGoogleOrSavedCredentials() {
+        // Google sign-in
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        if (account != null) {
+            Log.d(TAG, "Found Google account, authenticating with Firebase");
+            firebaseAuthWithGoogle(account.getIdToken());
+            return;
+        }
+
+        // Credential Manager
+        Log.d(TAG, "Checking Credential Manager for saved credentials...");
         GetCredentialRequest request = new GetCredentialRequest.Builder()
                 .addCredentialOption(new androidx.credentials.GetPasswordOption())
                 .build();
@@ -116,47 +150,47 @@ public class LoginActivity extends AppCompatActivity {
                 request,
                 null,
                 Runnable::run,
-                new androidx.credentials.CredentialManagerCallback<GetCredentialResponse, GetCredentialException>() {
+                new CredentialManagerCallback<GetCredentialResponse, GetCredentialException>() {
                     @Override
                     public void onResult(GetCredentialResponse result) {
                         Credential credential = result.getCredential();
                         if (credential instanceof PasswordCredential) {
                             PasswordCredential passwordCredential = (PasswordCredential) credential;
-                            loginEmail.setText(passwordCredential.getId());
-                            loginPassword.setText(passwordCredential.getPassword());
+                            performFirebaseEmailSignIn(passwordCredential.getId(), passwordCredential.getPassword());
                         }
-                        performFirebaseEmailSignIn(email, password);
                     }
 
                     @Override
                     public void onError(GetCredentialException e) {
-                        if (e instanceof NoCredentialException) {
-                            performFirebaseEmailSignIn(email, password);
-                        } else {
-                            Log.e(TAG, "Credential manager error", e);
-                            performFirebaseEmailSignIn(email, password);
+                        if (!(e instanceof NoCredentialException)) {
+                            Log.e(TAG, "Credential Manager error", e);
                         }
                     }
                 });
+    }
+
+    private void signInWithEmailPassword(String email, String password) {
+        performFirebaseEmailSignIn(email, password);
     }
 
     private void performFirebaseEmailSignIn(String email, String password) {
         auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
+                        Log.d(TAG, "Email/password login successful");
                         saveCredentialsToManager(email, password);
-                        FirebaseUser user = auth.getCurrentUser();
-                        updateUI(user);
+                        updateUI(auth.getCurrentUser());
                     } else {
-                        Toast.makeText(LoginActivity.this, "Authentication failed.",
+                        Log.e(TAG, "Email/password login failed", task.getException());
+                        Toast.makeText(LoginActivity.this,
+                                "Authentication failed: " + task.getException().getMessage(),
                                 Toast.LENGTH_SHORT).show();
-                        updateUI(null);
                     }
                 });
     }
+
     private void saveCredentialsToManager(String email, String password) {
         CreatePasswordRequest request = new CreatePasswordRequest(email, password);
-
         credentialManager.createCredentialAsync(
                 this,
                 request,
@@ -165,7 +199,7 @@ public class LoginActivity extends AppCompatActivity {
                 new CredentialManagerCallback<CreateCredentialResponse, CreateCredentialException>() {
                     @Override
                     public void onResult(CreateCredentialResponse response) {
-                        Log.d(TAG, "Credentials saved successfully");
+                        Log.d(TAG, "Credentials saved to Credential Manager");
                     }
 
                     @Override
@@ -201,19 +235,16 @@ public class LoginActivity extends AppCompatActivity {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         auth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        FirebaseUser user = auth.getCurrentUser();
-                        updateUI(user);
-                    } else {
-                        Log.w(TAG, "signInWithCredential:failure", task.getException());
+                    if (!task.isSuccessful()) {
+                        Log.w(TAG, "Google sign-in failed", task.getException());
                         Toast.makeText(this, "Google authentication failed", Toast.LENGTH_SHORT).show();
-                        updateUI(null);
                     }
                 });
     }
 
     private void updateUI(FirebaseUser user) {
         if (user != null) {
+            Log.d(TAG, "Updating UI for: " + user.getEmail());
             Toast.makeText(this, "Sign in successful", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(this, MainActivity.class));
             finish();

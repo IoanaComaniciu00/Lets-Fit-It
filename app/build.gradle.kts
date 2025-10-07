@@ -7,6 +7,8 @@ android {
     namespace = "com.example.letsfitit"
     compileSdk = 35
 
+
+
     defaultConfig {
         applicationId = "com.example.letsfitit"
         minSdk = 28
@@ -17,15 +19,22 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+
     buildTypes {
         release {
             isMinifyEnabled = false
+            isCrunchPngs = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
     }
+
+    aaptOptions {
+        noCompress.add("tflite")
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -61,6 +70,23 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
     annotationProcessor(libs.compiler)
+    implementation (libs.pytorch.android.lite)
+    implementation (libs.exifinterface)
+    implementation(libs.ar.core)
+
+    implementation(libs.tensorflow.lite)
+    implementation(libs.tensorflow.lite.gpu)
+
+
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.ext.junit)
+    androidTestImplementation(libs.espresso.core)
+
+    annotationProcessor(libs.compiler)
+
+    implementation(libs.okhttp)
+    implementation(libs.moshi)
+    implementation(libs.moshi.kotlin)
 
 
 
