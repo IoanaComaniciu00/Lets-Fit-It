@@ -4,17 +4,24 @@
     android:layout_height="match_parent"
     android:background="@android:color/black">
 
-    <!-- Camera Preview -->
-    <SurfaceView
-        android:id="@+id/camera_preview"
+    <!-- Camera Preview with CameraX -->
+    <androidx.camera.view.PreviewView
+        android:id="@+id/preview_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- Clothing Overlay  -->
+    <!-- Pose Overlay for drawing landmarks -->
+    <com.example.letsfitit.PoseOverlayView
+        android:id="@+id/pose_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible" />
+
+    <!-- Clothing Overlay -->
     <ImageView
         android:id="@+id/clothing_overlay"
-        android:layout_width="300dp"
-        android:layout_height="400dp"
+        android:layout_width="400dp"
+        android:layout_height="500dp"
         android:layout_centerInParent="true"
         android:scaleType="fitXY"
         android:visibility="visible" />
@@ -31,17 +38,43 @@
         android:background="@color/design_default_color_primary"
         android:textColor="@android:color/white" />
 
+    <!-- Toggle Pose View Button -->
+    <Button
+        android:id="@+id/btn_toggle_pose_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        android:text="Hide Pose"
+        android:background="@color/design_default_color_primary"
+        android:textColor="@android:color/white" />
+
     <!-- Instructions -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_margin="16dp"
         android:background="#80000000"
         android:padding="12dp"
-        android:text="Drag to move, pinch to resize"
+        android:text="Auto positioning: Pose detection active"
         android:textColor="@android:color/white"
         android:textSize="14sp" />
+
+    <!-- Pose Detection Status -->
+    <TextView
+        android:id="@+id/tv_pose_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btn_back"
+        android:layout_alignParentStart="true"
+        android:layout_margin="16dp"
+        android:background="#80000000"
+        android:padding="8dp"
+        android:text="Pose: Detecting..."
+        android:textColor="@android:color/white"
+        android:textSize="12sp" />
 
 </RelativeLayout>

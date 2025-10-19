@@ -1,3 +1,4 @@
+
 package com.example.letsfitit;
 
 import android.graphics.Bitmap;
@@ -14,7 +15,7 @@ import okhttp3.*;
 
 public class NetworkService {
     private static final String TAG = "NetworkService";
-    private static final String BASE_URL = "http://192.168.100.24:5000"; // Your IP
+    private static final String BASE_URL = "http://192.168.100.24:5000"; //  IP 192.168.100.24
     private OkHttpClient client;
 
     public NetworkService() {
@@ -30,12 +31,20 @@ public class NetworkService {
     }
 
     public static class ClothingItem {
-        public String label;
-        public double score;
+        private String label;
+        private double score;
 
         public ClothingItem(String label, double score) {
             this.label = label;
             this.score = score;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public double getScore() {
+            return score;
         }
     }
 
@@ -77,15 +86,19 @@ public class NetworkService {
 
                     for (int i = 0; i < itemsArray.length(); i++) {
                         JSONObject item = itemsArray.getJSONObject(i);
-                        detectedItems.add(new ClothingItem(
+                        ClothingItem clothingItem = new ClothingItem(
                                 item.getString("label"),
                                 item.getDouble("score")
-                        ));
-                        Log.d(TAG, "Item: " + item.getString("label") + " score: " + item.getDouble("score"));
+                        );
+                        detectedItems.add(clothingItem);
+                        Log.d(TAG, "Item: " + clothingItem.getLabel() + " score: " + clothingItem.getScore());
                     }
 
                     String primaryItem = result.getString("primary_item");
                     Log.d(TAG, "Primary item: " + primaryItem);
+
+                    // Set detected items in ARDataHolder for clothing type detection
+                    ARDataHolder.setDetectedItems(detectedItems);
 
                     if (callback != null) {
                         callback.onSuccess(segmentedBitmap, detectedItems, primaryItem);
